@@ -1,6 +1,8 @@
 import {React} from 'react'
 import { BsArrowLeftShort } from 'react-icons/bs'
 import {useRouter} from 'next/router'
+import {useContext} from 'react'
+import {TwiterContext} from '../../context/TwitterContext'
 
 const style = {
   wrapper: `border-[#38444d] border-b`,
@@ -22,8 +24,7 @@ const style = {
 
 const ProfileHeader = () => {
 
-  const isProfileImageNft= false;
-  const currentAccount = '0x365a4EFd1c8cd0B0c29480175285400E3F52f22e';
+  const {currentAccount, currentUser} = useContext(TwiterContext);
 
   const router = useRouter();
   return (
@@ -33,25 +34,25 @@ const ProfileHeader = () => {
           <BsArrowLeftShort/>
         </div>
         <div className={style.details}>
-          <div className={style.primary}>Pratham Shukla</div>
-          <div className={style.secondary}>4 Tweets</div>
+          <div className={style.primary}>{currentUser.name}</div>
+          <div className={style.secondary}>{currentUser.tweets?.length} {currentUser.tweets?.length === 1 ? 'Tweet': "Tweets"}</div>
         </div>
       </div>
       <div className={style.coverPhotoContainer} >
-        <img src="https://pbs.twimg.com/profile_banners/2825642501/1644771907/1500x500" 
+        <img src={currentUser.coverImage}  
         alt="cover"
         className={style.coverPhotoContainer} />
       </div>
       <div className={style.profileImageContainer}>
-        <div className={isProfileImageNft ? 'hex': style.profileImageContainer}>
-          <img src="https://pbs.twimg.com/profile_images/1276770212927410176/qTgTIejk_400x400.jpg"
+        <div className={currentUser.isProfileImageNft ? 'hex': style.profileImageContainer}>
+          <img src={currentUser.profileImage} 
            alt="profile"
-           className={isProfileImageNft ? style.profileImageNft : style.profileImage} />
+           className={currentUser.isProfileImageNft ? style.profileImageNft : style.profileImage} />
         </div>
       </div>
       <div className={style.details}>
         <div>
-          <div className={style.primary}>Pratham Shukla</div>
+          <div className={style.primary}>{currentUser.name}</div>
         </div>
         <div className={style.secondary}>
           {

@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
+import {TwiterContext} from '../context/TwitterContext';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 import {FiMoreHorizontal} from 'react-icons/fi';
 import {VscTwitter} from 'react-icons/vsc';
 import {RiHome7Line, RiHome7Fill, RiFileList2Fill} from 'react-icons/ri';
@@ -10,15 +12,19 @@ import {FaRegListAlt, FaBell, FaHashtag} from 'react-icons/fa';
 import {CgMoreO} from 'react-icons/cg';
 import SidebarOption from './SidebarOption';
 import {BsBookmark, BsBookmarkFill, BsPerson, BsPersonFill} from 'react-icons/bs';
+import Modal from 'react-modal'
+import ProfileImageMinter from './mintingModal/ProfileImageMinter'
+import {customStyles} from '../lib/constants'
+
 
 const style ={
-    wrapper: `flex-[0.7] flex flex-col px-8  `,
+    wrapper: `flex-[0.7] flex flex-col px-8 h-[100vh] sticky top-0 `,
     twitterIconContainer: `text-3xl m-4`,
     tweetButton: `bg-[#1d9bf0] pt-3 hover:bg-[#1b8cd8] flex item-center justify-center font-bold rounded-3xl h-[50px] mt-[20px] cursor-pointer`,
     navContainer: `flex-1`,
     profileButton: `flex items-center mb-6 cursor-pointer hover:bg-[#333c45] rounded-[100px] p-2`,
     profileLeft: `flex item-center justify-center mr-4`,
-    profileImage: `height-12 w-12 rounded-full`,
+    profileImage: `h-12 w-12 rounded-full`,
     profileRight: `flex-1 flex`,
     details: `flex-1`,
     name: `text-lg`,
@@ -28,6 +34,8 @@ const style ={
 
 const Sidebar = ({initialSelectedIcon="Home"}) => {
     const [selected, setSelected] = useState(initialSelectedIcon)
+    const router = useRouter();
+    const {currentAccount, currentUser} = useContext(TwiterContext)
   return (
     <div className={style.wrapper}>
         <div className={style.twitterIconContainer}>
@@ -75,20 +83,30 @@ const Sidebar = ({initialSelectedIcon="Home"}) => {
             text='More'
             setSelected={setSelected}
             />
-            <div className={style.tweetButton} >Mint</div>
+            <div onClick={()=>{router.push(`${router.pathname}/?mint=${currentAccount}`)}} className={style.tweetButton} >Mint</div>
         </div>
         <div className={style.profileButton}>
-            <div className={style.profileLeft}></div>
+            <div className={style.profileLeft}>
+                <img src={currentUser.profileImage} alt="profile" className={currentUser.isProfileImageNft ? `${style.profileImage} smallHex` : style.profileImage} />
+            </div>
             <div className={style.profileRight}>
                 <div className={style.details}>
-                    <div className={style.name}>Pratham</div>
-                    <div className={style.handle}>0x365a...2f22e</div>
+                    <div className={style.name}>{currentUser.name}</div>
+                    <div className={style.handle}>@{currentAccount.slice(0,6)}...{currentAccount.slice(39)}</div>
                 </div>
                 <div className={style.moreContainer}>
                     <FiMoreHorizontal/>
                 </div>
             </div>
         </div>
+
+        <Modal
+        isOpen={Boolean(router.query.mint)}
+        onRequestClose={() => router.back()}
+        style={customStyles}
+      >
+        <ProfileImageMinter />
+      </Modal>
     </div>
   )
 }

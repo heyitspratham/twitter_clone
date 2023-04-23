@@ -3,6 +3,9 @@ import {BsCardImage, BsEmojiSmile} from 'react-icons/bs';
 import {RiFileGifLine, RiBarChartHorizontalFill} from 'react-icons/ri';
 import {IoMdCalendar} from 'react-icons/io';
 import {MdOutlineLocationOn} from 'react-icons/md';
+import {client} from "../../lib/client";
+import {TwiterContext} from "../../context/TwitterContext"
+import { useContext } from 'react';
 
 const style = {
     icon: "mr-2 text-xl",
@@ -10,16 +13,44 @@ const style = {
 
 const TweetBox = () => {
     const [tweetMessage, setTweetMessage] = useState('');
-    const postTweet = (event) =>{
+    const {currentAccount, currentUser, tweets, fetchTweets } = useContext(TwiterContext);
+
+    const postTweet = async (event) =>{
         event.preventDefault();
-        console.log(tweetMessage);
+        if(!tweetMessage) return;
+
+        const tweetId = `${currentAccount}_${Date.now()}`
+
+        const tweetDoc = {
+            _type: 'tweets',
+            _id: tweetId,
+            tweet: tweetMessage,
+            timestamp: new Date(Date.now()).toISOString(),
+            author: {
+                _key: tweetId,
+                _type: 'reference',
+                _ref: currentAccount 
+            }
+        }
+
+        await client.createIfNotExists(tweetDoc)
+        
+        await client.patch(currentAccount).setIfMissing({tweets: []}).insert('after', 'tweets[-1]', [
+            {
+                _key: tweetId,
+                _type: 'reference',
+                _ref: tweetId,
+            },
+        ]).commit()
+
+        await fetchTweets()
         setTweetMessage('');
     }
 
   return (
     <div className="px-4 flex flex-row border-b border-[#38444d] pb-4" >
         <div className="left mr-4">
-            <img src="https://pbs.twimg.com/profile_images/1276770212927410176/qTgTIejk_400x400.jpg" alt="profile-image" className="h-12 w-12 rounded-full" />
+            <img src={currentUser.profileImage} alt="profile-image" className={currentUser.isProfileImageNft? `h-12 w-12 rounded-full smallHex`: 'h-12 w-12 rounded-full'} />
         </div>
         <div className="right flex-1">
             <form>

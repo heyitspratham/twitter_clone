@@ -1,5 +1,7 @@
 import React from 'react'
 import Post from '../Post'
+import { useContext } from 'react'
+import {TwiterContext} from '../../context/TwitterContext'
 
 const style = {
   wrapper: `no-scrollbar`,
@@ -42,15 +44,18 @@ const tweets =[
 ]
 
 const ProfileTweets = () => {
+
+  const {currentUser, currentAccount} = useContext(TwiterContext);
+
   return (
     <div className={style.wrapper}>
-      {tweets.map((tweets, index)=>(
+      {currentUser.tweets.map((tweets, index)=>(
         <Post
           key={index}
-          displayName={tweets.displayName}
-          userName={`${tweets.userName.slice(0,4)}...${tweets.userName.slice(-4)}`}
-          text = {tweets.text}
-          avatar={tweets.avatar}
+          displayName={currentUser.name === 'Unnamed'? `${currentAccount.slice(0,4)}...${currentAccount.slice(-4)}`: currentUser.name}
+          userName={`${currentAccount.slice(0,4)}...${currentAccount.slice(-4)}`}
+          text = {tweets.tweet}
+          avatar={currentUser.profileImage}
           isProfileImageNft={tweets.isProfileImageNft}
           timeStamp={tweets.timeStamp}
         />

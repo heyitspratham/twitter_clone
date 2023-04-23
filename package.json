@@ -7,10 +7,13 @@
   },
   "dependencies": {
     "@openzeppelin/contracts": "^4.5.0",
+    "@sanity/client": "^3.3.0",
+    "@sanity/generate-help-url": "^3.0.0",
     "next": "latest",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-icons": "^4.3.1",
+    "react-modal": "^3.15.1",
     "timeago": "^1.6.7",
     "timeago.js": "^4.0.2"
   },
